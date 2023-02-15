@@ -1,5 +1,6 @@
-import { useState } from 'preact/hooks'
+import { useState, useEffect } from 'preact/hooks'
 import { invoke } from '@tauri-apps/api/tauri'
+import { appWindow } from '@tauri-apps/api/window'
 
 export const App = () => {
   const [host, setHost] = useState<string>('')
@@ -11,8 +12,30 @@ export const App = () => {
 
   const handleSubmit = (event: Event) => {
     event.preventDefault()
-    invoke('begin_ping', { host }).then(console.log, console.error)
+
+    invoke('begin_ping', {
+      host,
+      window: appWindow,
+    }).then(console.log, console.error)
   }
+
+  const handleStop = () => {
+    invoke('stop_ping').then(console.log, console.error)
+  }
+
+  useEffect(() => {
+    appWindow.listen('ping-stdout', (payload) => {
+      console.log('Output', payload)
+    })
+
+    appWindow.listen('ping-stderr', (payload) => {
+      console.log('Error', payload)
+    })
+
+    appWindow.listen('ping-exit', (payload) => {
+      console.log('Exit', payload)
+    })
+  }, [])
 
   return (
     <form class="flex flex-col items-center" onSubmit={handleSubmit}>
@@ -43,6 +66,10 @@ export const App = () => {
           </button>
         </div>
       </label>
+
+      <button type="button" onClick={handleStop}>
+        Stop
+      </button>
     </form>
   )
 }
