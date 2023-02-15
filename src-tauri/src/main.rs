@@ -15,14 +15,14 @@ struct PingOutputLine {
 }
 
 #[tauri::command]
-async fn begin_ping(host: String, window: Window) -> Result<String, String> {
+async fn start_ping(host: String, window: Window) -> Result<String, String> {
     unsafe {
         if PING.is_some() {
             return Err("Already pinging".to_string());
         }
 
         let mut command = Command::new("ping");
-        command.args(&["--", &host]);
+        command.args(&["-c", "30", "--", &host]);
         command.stdout(Stdio::piped());
         command.stderr(Stdio::piped());
 
@@ -88,7 +88,7 @@ async fn stop_ping() -> Result<String, String> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![begin_ping, stop_ping])
+        .invoke_handler(tauri::generate_handler![start_ping, stop_ping])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'preact/hooks'
-import { invoke } from '@tauri-apps/api/tauri'
-import { appWindow } from '@tauri-apps/api/window'
+export interface StartPageProps {
+  host: string
+  setHost: (host: string) => void
+  startPing: () => void
+}
 
-export const App = () => {
-  const [host, setHost] = useState<string>('')
-
+export const StartPage = ({ host, setHost, startPing }: StartPageProps) => {
   const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
     setHost(target.value)
@@ -12,30 +12,8 @@ export const App = () => {
 
   const handleSubmit = (event: Event) => {
     event.preventDefault()
-
-    invoke('begin_ping', {
-      host,
-      window: appWindow,
-    }).then(console.log, console.error)
+    startPing()
   }
-
-  const handleStop = () => {
-    invoke('stop_ping').then(console.log, console.error)
-  }
-
-  useEffect(() => {
-    appWindow.listen('ping-stdout', (payload) => {
-      console.log('Output', payload)
-    })
-
-    appWindow.listen('ping-stderr', (payload) => {
-      console.log('Error', payload)
-    })
-
-    appWindow.listen('ping-exit', (payload) => {
-      console.log('Exit', payload)
-    })
-  }, [])
 
   return (
     <form class="flex flex-col items-center" onSubmit={handleSubmit}>
@@ -50,7 +28,7 @@ export const App = () => {
               type="text"
               class="rounded-lg bg-input shadow-inner text-center p-1 focus:bg-input-focus"
               placeholder="0.0.0.0"
-              size="20"
+              size={20}
               value={host}
               onInput={handleInput}
             />
@@ -66,10 +44,6 @@ export const App = () => {
           </button>
         </div>
       </label>
-
-      <button type="button" onClick={handleStop}>
-        Stop
-      </button>
     </form>
   )
 }
