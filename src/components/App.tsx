@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect, useReducer, useState } from 'preact/hooks'
 import { invoke } from '@tauri-apps/api/tauri'
 import { appWindow } from '@tauri-apps/api/window'
 import { useEventListener } from '../hooks'
 import { PingingPage } from './PingingPage'
 import { StartPage } from './StartPage'
 import { PingData } from '../types'
-import { parsePingData } from '../utils'
+import { parsePingData, pingDataReducer } from '../utils'
 
 const rawStopPing = () => invoke('stop_ping')
 
@@ -17,13 +17,13 @@ export const App = () => {
 
   const [host, setHost] = useState('')
   const [isPinging, setIsPinging] = useState(false)
-  const [pingData, setPingData] = useState<PingData[]>([])
+  const [pingData, dispatchPingData] = useReducer(pingDataReducer, [])
 
   const startPing = () => {
     // TODO: Validate host
 
     setIsPinging(true)
-    setPingData([])
+    dispatchPingData({ type: 'clear' })
 
     // TODO: Handle error
     invoke('start_ping', {
@@ -43,7 +43,7 @@ export const App = () => {
     const data = parsePingData(event.detail)
 
     if (data) {
-      setPingData((prev) => [...prev, data])
+      dispatchPingData({ type: 'insert', data })
     }
   }) as EventListener, [])
 
