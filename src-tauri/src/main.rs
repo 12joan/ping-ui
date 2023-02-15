@@ -22,7 +22,7 @@ async fn start_ping(host: String, window: Window) -> Result<String, String> {
         }
 
         let mut command = Command::new("ping");
-        command.args(&["-c", "30", "--", &host]);
+        command.args(&["--", &host]);
         command.stdout(Stdio::piped());
         command.stderr(Stdio::piped());
 

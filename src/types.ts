@@ -12,3 +12,10 @@ export type PingDataTimeout = {
 }
 
 export type PingData = PingDataSuccess | PingDataTimeout
+
+export type PingDataAnalysis = {
+  overallMean: number
+  last10Mean: number
+  overallSuccessRate: number
+  last10SuccessRate: number
+}
