@@ -13,6 +13,7 @@ module.exports = {
         'button': 'rgb(41, 41, 41)',
         'button-hover': 'rgb(50, 50, 50)',
         'ui-text': 'rgb(123, 123, 123)',
+        'accent': 'rgb(240, 160, 60)',
       },
     },
   },

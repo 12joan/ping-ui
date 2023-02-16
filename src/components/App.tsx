@@ -57,6 +57,7 @@ export const App = () => {
 
   return isPinging
     ? <PingingPage
+      host={host}
       stopPing={stopPing}
       pingData={pingData}
     />
