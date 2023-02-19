@@ -3,12 +3,12 @@ import {
   PingDataTimeout,
 } from '../types'
 
-export type PingDataSuccessOptions = {
+export type PingDataSuccessOptions = Partial<PingDataSuccess> & {
   seq: number
   time: number
 }
 
-export type PingDataTimeoutOptions = {
+export type PingDataTimeoutOptions = Partial<PingDataTimeout> & {
   seq: number
 }
 
@@ -17,6 +17,7 @@ export const makePingDataSuccess = (
 ): PingDataSuccess => ({
   isSuccess: true,
   isTimeout: false,
+  arrivedAt: performance.now(),
   ...options,
 })
 
@@ -25,6 +26,7 @@ export const makePingDataTimeout = (
 ): PingDataTimeout => ({
   isSuccess: false,
   isTimeout: true,
+  arrivedAt: performance.now(),
   ...options,
 })
 

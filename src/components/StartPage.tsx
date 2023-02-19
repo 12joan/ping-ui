@@ -24,20 +24,22 @@ export const StartPage = ({ host, setHost, startPing }: StartPageProps) => {
 
         <div class="flex items-center gap-2">
           <div class="rounded-lg inset-border">
-            <input
-              type="text"
-              class="rounded-lg bg-input shadow-inner text-center p-1 focus:bg-input-focus"
-              placeholder="0.0.0.0"
-              autoFocus
-              size={20}
-              value={host}
-              onInput={handleInput}
-            />
+            <div class="rounded-lg bg-window">
+              <input
+                type="text"
+                class="rounded-lg bg-white/5 shadow-inner text-center p-1 focus:bg-black/25"
+                placeholder="0.0.0.0"
+                autoFocus
+                size={20}
+                value={host}
+                onInput={handleInput}
+              />
+            </div>
           </div>
 
           <button
             type="submit"
-            class="aspect-square rounded-full bg-button p-2 hover:bg-button-hover transition-colors cursor-default text-ui-text"
+            class="aspect-square rounded-lg bg-white/5 p-2 hover:bg-white/10 transition-colors cursor-default text-white/60 hover:text-white"
             aria-label="Start"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">

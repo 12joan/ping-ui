@@ -10,10 +10,11 @@ module.exports = {
         'window': 'rgb(30, 30, 30)',
         'input': 'rgb(37, 37, 37)',
         'input-focus': 'rgb(27, 27, 27)',
-        'button': 'rgb(41, 41, 41)',
-        'button-hover': 'rgb(50, 50, 50)',
         'ui-text': 'rgb(123, 123, 123)',
         'accent': 'rgb(240, 160, 60)',
+      },
+      opacity: {
+        '80': '0.8',
       },
     },
   },

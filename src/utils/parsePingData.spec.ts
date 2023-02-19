@@ -20,11 +20,11 @@ describe('parsePingData', () => {
 
   it('parses successful ping lines', () => {
     const line = '64 bytes from 1.1.1.1: icmp_seq=18 ttl=55 time=28.190 ms'
-    expect(parsePingData(line)).toEqual(makePingDataSuccess({ seq: 18, time: 28.19 }))
+    expect(parsePingData(line)).toMatchObject({ seq: 18, time: 28.19 })
   })
 
   it('parses timeout ping lines', () => {
     const line = 'Request timeout for icmp_seq 192'
-    expect(parsePingData(line)).toEqual(makePingDataTimeout({ seq: 192 }))
+    expect(parsePingData(line)).toMatchObject({ seq: 192 })
   })
 })
