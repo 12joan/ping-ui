@@ -1,3 +1,4 @@
+import { PingData } from '../types'
 import { Graph } from './types'
 import {
   VIEWBOX_WIDTH,
@@ -5,13 +6,11 @@ import {
   WINDOW,
 } from './constants'
 import { getOffset } from './getOffset'
-import { getMaxTime } from './getMaxTime'
 import { getPathForPings } from './getPathForPings'
+import { getMaxTime } from './getMaxTime'
 
-export const getUpdate = (graph: Graph) => () => {
-  const { svg, state } = graph
-  const { line } = svg
-  const { pingData, offsetCache, maxTimeCache } = state
+export const getPathData = (graph: Graph, pingData: PingData[]) => {
+  const { offsetCache, maxTimeCache } = graph
 
   const offset = getOffset({
     pingData,
@@ -35,6 +34,5 @@ export const getUpdate = (graph: Graph) => () => {
     },
   })
 
-  const pathString = path.map(({ type, point }) => `${type}${point.x},${point.y}`).join('')
-  line.setAttribute('d', pathString)
+  return path.map(({ type, point }) => `${type}${point.x},${point.y}`).join('')
 }
