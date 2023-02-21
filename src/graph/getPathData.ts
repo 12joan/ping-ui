@@ -1,40 +1,71 @@
-import { PingData } from '../types'
-import { Graph } from './types'
 import {
-  VIEWBOX_WIDTH,
-  VIEWBOX_HEIGHT,
-  WINDOW,
-} from './constants'
-import { getOffset } from './getOffset'
-import { getPathForPings } from './getPathForPings'
-import { getMaxTime } from './getMaxTime'
+  PingData,
+  PingDataSuccess,
+} from '../types'
+import { Graph, Point } from './types'
+import { getVisiblePings } from './getVisiblePings'
+import { interpolatePoints } from './interpolatePoints'
 
-export const getPathData = (graph: Graph, pingData: PingData[]) => {
-  const { offsetCache, maxTimeCache } = graph
+export type SVGPathMoveCommand = {
+  type: 'M'
+  point: Point
+}
 
-  const visiblePings = pingData.slice(-WINDOW - 1)
+export type SVGPathLineCommand = {
+  type: 'L'
+  point: Point
+}
 
-  const offset = getOffset({
-    pingData: visiblePings,
-    time: performance.now(),
-    cache: offsetCache,
+export type SVGPathCommand = SVGPathMoveCommand | SVGPathLineCommand
+
+export type SVGPath = SVGPathCommand[]
+
+export type GetPathDataOptions = {
+  pingData: PingData[],
+  time: number,
+}
+
+export const getPathData = (graph: Graph, { pingData, time }: GetPathDataOptions) => {
+  const visiblePings = getVisiblePings(graph, pingData)
+
+  const commands: SVGPathCommand[] = []
+  let newLine = true
+  let previousPoint: Point | null = null
+
+  visiblePings.forEach((ping, i) => {
+    if (ping.isTimeout) {
+      newLine = true
+      return
+    }
+
+    const point: Point = { x: ping.seq, y: ping.time }
+
+    if (newLine) {
+      commands.push({
+        type: 'M',
+        point,
+      } as SVGPathMoveCommand)
+
+      newLine = false
+      previousPoint = point
+
+      return
+    }
+
+    const isLast = i === visiblePings.length - 1
+    const progress = (time - ping.arrivedAt) / 1000
+
+    const interpolatedPoint = isLast
+      ? interpolatePoints(previousPoint!, point, progress)
+      : point
+
+    commands.push({
+      type: 'L',
+      point: interpolatedPoint,
+    } as SVGPathLineCommand)
+
+    previousPoint = point
   })
 
-  const maxTime = getMaxTime({
-    pingData: visiblePings,
-    time: performance.now(),
-    cache: maxTimeCache,
-  })
-
-  const path = getPathForPings({
-    pingData: visiblePings,
-    time: performance.now(),
-    pointForPing: ({ seq, time }) => {
-      const x = (seq - offset) * (VIEWBOX_WIDTH / WINDOW)
-      const y = VIEWBOX_HEIGHT - (time / maxTime) * VIEWBOX_HEIGHT
-      return { x, y }
-    },
-  })
-
-  return path.map(({ type, point }) => `${type}${point.x},${point.y}`).join('')
+  return commands.map(({ type, point }) => `${type}${point.x},${point.y}`).join('')
 }

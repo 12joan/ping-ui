@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
-    "preact": "^10.11.3"
+    "preact": "^10.11.3",
+    "ts-matrix": "^1.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.12",

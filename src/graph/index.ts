@@ -1,4 +1,5 @@
 export * from './getPathData'
+export * from './getTransforms'
 export * from './getViewport'
 export * from './makeGraph'
 export * from './types'
