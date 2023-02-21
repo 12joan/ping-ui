@@ -29,6 +29,7 @@ export const getOffset = ({ pingData, time, cache }: GetOffsetOptions): number =
   const offsetWhenLastPingArrived = getOffsetWithCache({
     pingData: pingsAtTime.slice(0, -1),
     time: lastPing.arrivedAt,
+    cache,
   })
 
   const targetOffsetAfterTimePeriod = lastPing.seq - WINDOW + 1

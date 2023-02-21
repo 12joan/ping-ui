@@ -27,6 +27,7 @@ export const getMaxTime = ({ pingData, time, cache }: GetMaxTimeOptions): number
   const maxTimeWhenLastPingArrived = getMaxTimeWithCache({
     pingData: pingsAtTime.slice(0, -1),
     time: lastPing.arrivedAt,
+    cache,
   })
 
   const targetMaxTime = Math.max(

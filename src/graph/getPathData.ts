@@ -12,20 +12,22 @@ import { getMaxTime } from './getMaxTime'
 export const getPathData = (graph: Graph, pingData: PingData[]) => {
   const { offsetCache, maxTimeCache } = graph
 
+  const visiblePings = pingData.slice(-WINDOW - 1)
+
   const offset = getOffset({
-    pingData,
+    pingData: visiblePings,
     time: performance.now(),
     cache: offsetCache,
   })
 
   const maxTime = getMaxTime({
-    pingData,
+    pingData: visiblePings,
     time: performance.now(),
     cache: maxTimeCache,
   })
 
   const path = getPathForPings({
-    pingData,
+    pingData: visiblePings,
     time: performance.now(),
     pointForPing: ({ seq, time }) => {
       const x = (seq - offset) * (VIEWBOX_WIDTH / WINDOW)

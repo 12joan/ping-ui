@@ -1,12 +1,14 @@
 import { useRef, useLayoutEffect, useState } from 'preact/hooks'
 import { PingData } from '../types'
 import { getPathData, getViewport, makeGraph } from '../graph'
+import { useMutable } from '../hooks'
 
 export interface GraphProps {
   pingData: PingData[]
 }
 
 export const Graph = ({ pingData }: GraphProps) => {
+  const pingDataRef = useMutable(pingData)
   const [graph] = useState(() => makeGraph())
   const pathRef = useRef<SVGPathElement>(null)
 
@@ -15,6 +17,7 @@ export const Graph = ({ pingData }: GraphProps) => {
 
     const update = () => {
       if (!mounted) return
+      const pingData = pingDataRef.current
 
       const pathData = getPathData(graph, pingData)
       pathRef.current!.setAttribute('d', pathData)
@@ -27,17 +30,20 @@ export const Graph = ({ pingData }: GraphProps) => {
     return () => {
       mounted = false
     }
-  }, [pingData])
+  }, [])
 
   return (
     <div class="bg-white/5 rounded-lg p-2">
-      <svg viewBox={getViewport(graph)}>
-        <path
-          ref={pathRef}
-          stroke="currentColor"
-          fill="none"
-          stroke-width="2"
-        />
+      <svg viewBox={getViewport(graph)} class="pointer-events-none">
+        <g transform="translate(0 12) scale(1 0.90)">
+          <path
+            ref={pathRef}
+            stroke="currentColor"
+            fill="none"
+            stroke-width="2"
+            style={{ vectorEffect: 'non-scaling-stroke' }}
+          />
+        </g>
       </svg>
     </div>
   )
