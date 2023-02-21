@@ -1,15 +1,16 @@
 import { PingData, PingDataSuccess } from '../types'
 import { CacheProvider, withCache } from '../cache'
+import { Graph } from './types'
 import { WINDOW, MIN_MAX_TIME } from './constants'
+import { getVisiblePings } from './getVisiblePings'
 import { interpolate } from './interpolate'
 
 export type GetMaxTimeOptions = {
   pingData: PingData[],
   time: number,
-  cache?: CacheProvider<number, number>,
 }
 
-export const getMaxTime = ({ pingData, time, cache }: GetMaxTimeOptions): number => {
+export const getMaxTime = (graph: Graph, { pingData, time }: GetMaxTimeOptions): number => {
   const pingsAtTime = pingData.filter(({ arrivedAt }) => arrivedAt <= time)
 
   if (pingsAtTime.length === 0) {
@@ -17,22 +18,23 @@ export const getMaxTime = ({ pingData, time, cache }: GetMaxTimeOptions): number
   }
 
   const lastPing = pingsAtTime[pingsAtTime.length - 1]
-  const successPingsAtTime = pingsAtTime.filter(({ isSuccess }) => isSuccess) as PingDataSuccess[]
-  const successPingsInWindow = successPingsAtTime.slice(-WINDOW)
 
-  const getMaxTimeWithCache = cache
-    ? withCache(getMaxTime, { cache, key: ({ time }) => time })
-    : getMaxTime
+  const visiblePings = getVisiblePings(graph, pingsAtTime, false)
+  const successPings = visiblePings.filter(({ isSuccess }) => isSuccess) as PingDataSuccess[]
 
-  const maxTimeWhenLastPingArrived = getMaxTimeWithCache({
+  const getMaxTimeWithCache = withCache(getMaxTime, {
+    cache: graph.maxTimeCache,
+    key: (_graph, { time }) => time,
+  })
+
+  const maxTimeWhenLastPingArrived = getMaxTimeWithCache(graph, {
     pingData: pingsAtTime.slice(0, -1),
     time: lastPing.arrivedAt,
-    cache,
   })
 
   const targetMaxTime = Math.max(
     MIN_MAX_TIME,
-    ...successPingsInWindow.map(({ time }) => time)
+    ...successPings.map(({ time }) => time)
   )
 
   const progress = (time - lastPing.arrivedAt) / 1000

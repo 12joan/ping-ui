@@ -32,13 +32,17 @@ const scaleAbout = (x: number, y: number, cx: number, cy: number): Matrix => fol
 export type GetTransformsOptions = {
   pingData: PingData[],
   time: number,
+  maxTime: number,
 }
 
 export const getTransforms = (
   graph: Graph,
-  { pingData, time }: GetTransformsOptions,
+  {
+    pingData,
+    time,
+    maxTime,
+  }: GetTransformsOptions,
 ): string => {
-  const { offsetCache, maxTimeCache } = graph
   const visiblePings = getVisiblePings(graph, pingData)
 
   // Co-ordinates start as (seq, time) where (0, 0) is the top-left corner
@@ -48,22 +52,15 @@ export const getTransforms = (
   transforms.push(scaleAbout(1, -1, 0, VIEWBOX_HEIGHT / 2))
 
   // Translate x-axis by offset
-  const offset = getOffset({
+  const offset = getOffset(graph, {
     pingData: visiblePings,
     time,
-    cache: offsetCache,
   })
 
   transforms.push(translate(-offset, 0))
 
   // Scale x-axis so that WINDOW pings fit in the viewbox
   // Scale y-axis so that (0, maxTime) is the top of the graph
-  const maxTime = getMaxTime({
-    pingData: visiblePings,
-    time,
-    cache: maxTimeCache,
-  })
-
   transforms.push(scaleAbout(
     VIEWBOX_WIDTH / WINDOW,
     VIEWBOX_HEIGHT / maxTime,

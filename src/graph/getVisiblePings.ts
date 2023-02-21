@@ -5,4 +5,5 @@ import { WINDOW } from './constants'
 export const getVisiblePings = (
   _graph: Graph,
   pingData: PingData[],
-) => pingData.slice(-WINDOW - 1)
+  includePartiallyVisible: boolean = true
+) => pingData.slice(-WINDOW - (includePartiallyVisible ? 1 : 0))

@@ -1,6 +1,7 @@
 import { PingData } from '../types'
 import { makePingDataTimeout } from '../utils'
 import { getOffset } from './getOffset'
+import { makeGraph } from './makeGraph'
 import { WINDOW } from './constants'
 import { interpolate } from './interpolate'
 
@@ -18,8 +19,9 @@ describe('getOffset', () => {
       const pingData = makeNPings(WINDOW)
 
       it('should return 0', () => {
+        const graph = makeGraph()
         const time = getLastArrivedAt(pingData)
-        expect(getOffset({ pingData, time })).toBe(0)
+        expect(getOffset(graph, { pingData, time })).toBe(0)
       })
     })
 
@@ -30,7 +32,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData)
 
         it('should return 0', () => {
-          expect(getOffset({ pingData, time })).toBe(0)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(0)
         })
       })
 
@@ -38,7 +41,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData) + 200
 
         it('should return 0.2', () => {
-          expect(getOffset({ pingData, time })).toBe(0.2)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(0.2)
         })
       })
 
@@ -46,7 +50,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData) + 1000
 
         it('should return 1', () => {
-          expect(getOffset({ pingData, time })).toBe(1)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(1)
         })
       })
 
@@ -54,7 +59,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData) + 1001
 
         it('should return 1', () => {
-          expect(getOffset({ pingData, time })).toBe(1)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(1)
         })
       })
     })
@@ -66,7 +72,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData)
 
         it('should return 1', () => {
-          expect(getOffset({ pingData, time })).toBe(1)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(1)
         })
       })
 
@@ -74,7 +81,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData) + 200
 
         it('should return 1.2', () => {
-          expect(getOffset({ pingData, time })).toBe(1.2)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(1.2)
         })
       })
 
@@ -82,7 +90,8 @@ describe('getOffset', () => {
         const time = getLastArrivedAt(pingData) + 1000
 
         it('should return 2', () => {
-          expect(getOffset({ pingData, time })).toBe(2)
+          const graph = makeGraph()
+          expect(getOffset(graph, { pingData, time })).toBe(2)
         })
       })
     })
@@ -107,7 +116,8 @@ describe('getOffset', () => {
       const time = pingWindowPlusOne.arrivedAt
 
       it('should return 0.2', () => {
-        expect(getOffset({ pingData, time })).toBe(0.2)
+        const graph = makeGraph()
+        expect(getOffset(graph, { pingData, time })).toBe(0.2)
       })
     })
 
@@ -115,7 +125,8 @@ describe('getOffset', () => {
       const time = pingWindowPlusOne.arrivedAt + 50
 
       it('should interpolate between 0.2 and 2', () => {
-        expect(getOffset({ pingData, time })).toBe(interpolate(0.2, 2, 50 / 1000))
+        const graph = makeGraph()
+        expect(getOffset(graph, { pingData, time })).toBe(interpolate(0.2, 2, 50 / 1000))
       })
     })
 
@@ -123,7 +134,8 @@ describe('getOffset', () => {
       const time = pingWindowPlusOne.arrivedAt + 1000
 
       it('should return 2', () => {
-        expect(getOffset({ pingData, time })).toBe(2)
+        const graph = makeGraph()
+        expect(getOffset(graph, { pingData, time })).toBe(2)
       })
     })
   })

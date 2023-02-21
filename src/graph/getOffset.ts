@@ -1,15 +1,15 @@
 import { PingData } from '../types'
 import { CacheProvider, withCache } from '../cache'
+import { Graph } from './types'
 import { WINDOW } from './constants'
 import { interpolate } from './interpolate'
 
 export type GetOffsetOptions = {
   pingData: PingData[],
   time: number,
-  cache?: CacheProvider<number, number>,
 }
 
-export const getOffset = ({ pingData, time, cache }: GetOffsetOptions): number => {
+export const getOffset = (graph: Graph, { pingData, time }: GetOffsetOptions): number => {
   const pingsAtTime = pingData.filter(({ arrivedAt }) => arrivedAt <= time)
 
   if (pingsAtTime.length === 0) {
@@ -22,14 +22,14 @@ export const getOffset = ({ pingData, time, cache }: GetOffsetOptions): number =
     return 0
   }
 
-  const getOffsetWithCache = cache
-    ? withCache(getOffset, { cache, key: ({ time }) => time })
-    : getOffset
+  const getOffsetWithCache = withCache(getOffset, {
+    cache: graph.offsetCache,
+    key: (_graph, { time }) => time,
+  })
 
-  const offsetWhenLastPingArrived = getOffsetWithCache({
+  const offsetWhenLastPingArrived = getOffsetWithCache(graph, {
     pingData: pingsAtTime.slice(0, -1),
     time: lastPing.arrivedAt,
-    cache,
   })
 
   const targetOffsetAfterTimePeriod = lastPing.seq - WINDOW + 1

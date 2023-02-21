@@ -1,3 +1,4 @@
+export * from './getMaxTime'
 export * from './getPathData'
 export * from './getTransforms'
 export * from './getViewport'

@@ -1,6 +1,7 @@
 import { PingData } from '../types'
 import { makePingDataSuccess } from '../utils'
 import { getMaxTime } from './getMaxTime'
+import { makeGraph } from './makeGraph'
 import { WINDOW, MIN_MAX_TIME } from './constants'
 import { interpolate } from './interpolate'
 
@@ -34,7 +35,8 @@ describe('getMaxTime', () => {
       const time = getLastArrivedAt(pingData)
 
       it('returns MIN_MAX_TIME', () => {
-        expect(getMaxTime({ pingData, time })).toBe(MIN_MAX_TIME)
+        const graph = makeGraph()
+        expect(getMaxTime(graph, { pingData, time })).toBe(MIN_MAX_TIME)
       })
     })
 
@@ -47,7 +49,8 @@ describe('getMaxTime', () => {
       const time = getLastArrivedAt(pingData)
 
       it('returns the greatest time', () => {
-        expect(getMaxTime({ pingData, time })).toBe(doubleMinMaxTime)
+        const graph = makeGraph()
+        expect(getMaxTime(graph, { pingData, time })).toBe(doubleMinMaxTime)
       })
     })
   })
@@ -66,7 +69,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData)
 
           it('returns the time at seq 0', () => {
-            expect(getMaxTime({ pingData, time })).toBe(timeAtSeq0)
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(timeAtSeq0)
           })
         })
 
@@ -74,7 +78,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData) + 500
 
           it('interpolates between the time at seq 0 and MIN_MAX_TIME', () => {
-            expect(getMaxTime({ pingData, time })).toBe(
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(
               interpolate(timeAtSeq0, MIN_MAX_TIME, 500 / 1000)
             )
           })
@@ -84,7 +89,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData) + 1000
 
           it('returns MIN_MAX_TIME', () => {
-            expect(getMaxTime({ pingData, time })).toBe(MIN_MAX_TIME)
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(MIN_MAX_TIME)
           })
         })
       })
@@ -103,7 +109,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData)
 
           it('returns the time at seq 0', () => {
-            expect(getMaxTime({ pingData, time })).toBe(timeAtSeq0)
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(timeAtSeq0)
           })
         })
 
@@ -111,7 +118,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData) + 500
 
           it('interpolates between the time at seq 0 and the time at seq WINDOW', () => {
-            expect(getMaxTime({ pingData, time })).toBe(
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(
               interpolate(timeAtSeq0, timeAtSeqWindow, 500 / 1000)
             )
           })
@@ -121,7 +129,8 @@ describe('getMaxTime', () => {
           const time = getLastArrivedAt(pingData) + 1000
 
           it('returns the time at seq WINDOW', () => {
-            expect(getMaxTime({ pingData, time })).toBe(timeAtSeqWindow)
+            const graph = makeGraph()
+            expect(getMaxTime(graph, { pingData, time })).toBe(timeAtSeqWindow)
           })
         })
       })
