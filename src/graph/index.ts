@@ -1,5 +1,5 @@
 export * from './getMaxTime'
-export * from './getPathData'
+export * from './getLineData'
 export * from './getTransforms'
 export * from './getViewport'
 export * from './makeGraph'

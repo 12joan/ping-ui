@@ -2,12 +2,16 @@ import { useRef, useLayoutEffect, useState } from 'preact/hooks'
 import { PingData } from '../types'
 import {
   getMaxTime,
-  getPathData,
+  getLineData,
   getTransforms,
   getViewport,
   makeGraph,
 } from '../graph'
 import { useMutable } from '../hooks'
+
+const LINE_COLOR = '#00bfff'
+const AREA_OPACITY = 0.2
+const TIMEOUT_COLOR = '#aa0000'
 
 export interface GraphProps {
   pingData: PingData[]
@@ -18,7 +22,8 @@ export const Graph = ({ pingData }: GraphProps) => {
   const [graph] = useState(() => makeGraph())
 
   const transformGroupRef = useRef<SVGGElement>(null)
-  const pathRef = useRef<SVGPathElement>(null)
+  const linePathRef = useRef<SVGPathElement>(null)
+  const areaPathRef = useRef<SVGPathElement>(null)
   const timeoutGroupRef = useRef<SVGGElement>(null)
 
   useLayoutEffect(() => {
@@ -35,8 +40,9 @@ export const Graph = ({ pingData }: GraphProps) => {
       const transforms = getTransforms(graph, { pingData, time, maxTime })
       transformGroupRef.current!.setAttribute('transform', transforms)
 
-      const pathData = getPathData(graph, { pingData, time })
-      pathRef.current!.setAttribute('d', pathData)
+      const [lineData, areaData] = getLineData(graph, { pingData, time })
+      linePathRef.current!.setAttribute('d', lineData)
+      areaPathRef.current!.setAttribute('d', areaData)
 
       requestAnimationFrame(update)
     }
@@ -49,21 +55,30 @@ export const Graph = ({ pingData }: GraphProps) => {
   }, [])
 
   return (
-    <div class="bg-white/5 rounded-lg p-2">
+    <div class="bg-black/50 rounded-lg overflow-hidden">
       <svg viewBox={getViewport(graph)} class="pointer-events-none">
         <defs>
           <linearGradient id="timeout-gradient" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#660000" stop-opacity="1" />
-            <stop offset="100%" stop-color="#660000" stop-opacity="0" />
+            <stop offset="0%" stop-color={TIMEOUT_COLOR} stop-opacity="1" />
+            <stop offset="100%" stop-color={TIMEOUT_COLOR} stop-opacity="0.1" />
           </linearGradient>
         </defs>
 
         <g ref={transformGroupRef}>
           <path
-            ref={pathRef}
-            stroke="currentColor"
+            ref={areaPathRef}
+            stroke="none"
+            fill={LINE_COLOR}
+            fill-opacity={AREA_OPACITY}
+          />
+
+          <path
+            ref={linePathRef}
+            stroke={LINE_COLOR}
             fill="none"
             stroke-width="2"
+            stroke-linejoin="round"
+            stroke-linecap="round"
             style={{ vectorEffect: 'non-scaling-stroke' }}
           />
 

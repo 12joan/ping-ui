@@ -63,7 +63,7 @@ export const getTransforms = (
   // Scale y-axis so that (0, maxTime) is the top of the graph
   transforms.push(scaleAbout(
     VIEWBOX_WIDTH / WINDOW,
-    VIEWBOX_HEIGHT / maxTime,
+    (VIEWBOX_HEIGHT - 10) / maxTime,
     0,
     VIEWBOX_HEIGHT,
   ))

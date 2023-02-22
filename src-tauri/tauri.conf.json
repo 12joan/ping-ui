@@ -65,7 +65,7 @@
     "windows": [
       {
         "title": "ping-ui",
-        "height": 360,
+        "height": 263,
         "width": 420,
         "resizable": false,
         "theme": "Dark",

@@ -17,9 +17,9 @@ export interface SummaryProps {
 export const Summary = ({ pingData }: SummaryProps) => {
   const {
     overallMean,
-    last10Mean,
+    last60Mean,
     overallSuccessRate,
-    last10SuccessRate,
+    last60SuccessRate,
   } = useMemo(() => analyzePingData(pingData), [pingData])
 
   const sections = [
@@ -27,14 +27,14 @@ export const Summary = ({ pingData }: SummaryProps) => {
       section: 'Overall',
       data: [
         { label: 'Mean', value: formatMilliseconds(overallMean) },
-        { label: 'Rate', value: formatPercentage(overallSuccessRate) },
+        { label: 'Success', value: formatPercentage(overallSuccessRate) },
       ],
     },
     {
-      section: 'Last 10',
+      section: 'Last 60',
       data: [
-        { label: 'Mean', value: formatMilliseconds(last10Mean) },
-        { label: 'Rate', value: formatPercentage(last10SuccessRate) },
+        { label: 'Mean', value: formatMilliseconds(last60Mean) },
+        { label: 'Success', value: formatPercentage(last60SuccessRate) },
       ],
     },
   ]

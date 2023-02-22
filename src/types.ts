@@ -17,7 +17,7 @@ export type PingData = PingDataSuccess | PingDataTimeout
 
 export type PingDataAnalysis = {
   overallMean: number
-  last10Mean: number
+  last60Mean: number
   overallSuccessRate: number
-  last10SuccessRate: number
+  last60SuccessRate: number
 }

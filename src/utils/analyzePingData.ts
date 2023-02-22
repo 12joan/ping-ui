@@ -27,19 +27,19 @@ const getSuccesRate = (successCount: number, totalCount: number) => {
 
 export const analyzePingData = (pingData: PingData[]): PingDataAnalysis => {
   const overallSuccesses = subsetSuccesses(pingData)
-  const last10Successes = overallSuccesses.slice(-10)
-  const successesInLast10 = subsetSuccesses(pingData.slice(-10))
+  const last60Successes = overallSuccesses.slice(-60)
+  const successesInLast60 = subsetSuccesses(pingData.slice(-60))
 
   const overallMean = subsetMean(overallSuccesses)
-  const last10Mean = subsetMean(last10Successes)
+  const last60Mean = subsetMean(last60Successes)
 
   const overallSuccessRate = getSuccesRate(overallSuccesses.length, pingData.length)
-  const last10SuccessRate = getSuccesRate(successesInLast10.length, Math.min(pingData.length, 10))
+  const last60SuccessRate = getSuccesRate(successesInLast60.length, Math.min(pingData.length, 60))
 
   return {
     overallMean,
-    last10Mean,
+    last60Mean,
     overallSuccessRate,
-    last10SuccessRate,
+    last60SuccessRate,
   }
 }
