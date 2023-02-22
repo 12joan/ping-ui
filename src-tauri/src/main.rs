@@ -9,11 +9,6 @@ use tauri::Window;
 
 static mut PING: Option<Child> = None;
 
-struct PingOutputLine {
-    r#type: String,
-    line: String,
-}
-
 #[tauri::command]
 async fn start_ping(host: String, window: Window) -> Result<String, String> {
     unsafe {
@@ -43,28 +38,29 @@ async fn start_ping(host: String, window: Window) -> Result<String, String> {
             None => return Err("Failed to get stderr".to_string()),
         };
 
+        let window_stdout = window.clone();
         std::thread::spawn(move || {
             let stdout_reader = BufReader::new(stdout);
-            let stdout_lines = stdout_reader.lines().map(|line| PingOutputLine {
-                r#type: "stdout".to_string(),
-                line: line.unwrap(),
-            });
+            let stdout_lines = stdout_reader.lines();
 
-            let stderr_reader = BufReader::new(stderr);
-            let stderr_lines = stderr_reader.lines().map(|line| PingOutputLine {
-                r#type: "stderr".to_string(),
-                line: line.unwrap(),
-            });
-
-            let all_lines = stdout_lines.chain(stderr_lines);
-
-            for line in all_lines {
-                let event_name = format!("ping-{}", line.r#type);
-                window.emit(&event_name, Some(line.line)).unwrap();
+            for line in stdout_lines {
+                window_stdout.emit("ping-stdout", line.unwrap()).unwrap();
             }
+        });
 
+        let window_stderr = window.clone();
+        std::thread::spawn(move || {
+            let stderr_reader = BufReader::new(stderr);
+            let stderr_lines = stderr_reader.lines();
+
+            for line in stderr_lines {
+                window_stderr.emit("ping-stderr", line.unwrap()).unwrap();
+            }
+        });
+
+        std::thread::spawn(move || {
+            PING.as_mut().unwrap().wait().unwrap();
             window.emit("ping-exit", None::<()>).unwrap();
-
             PING = None;
         });
     }

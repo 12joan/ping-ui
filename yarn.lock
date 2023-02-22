@@ -2674,6 +2674,18 @@ postcss@^8.0.9, postcss@^8.4.21:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
+preact-merge-refs@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/preact-merge-refs/-/preact-merge-refs-1.0.2.tgz#06673e1c612640bcd1e5311c117de880e1705272"
+  integrity sha512-e0P9XELyn1/L/mNsZfyGXks3TIt35aqaAZw6QPxlKa2UUwWOMNmSdgjW4VDbWtP61wjgsLywscOK6w3PUgdp4w==
+
+preact-transitioning@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/preact-transitioning/-/preact-transitioning-1.4.0.tgz#aeea8584f9ec4c14d37a7cd62f9ee804d83090ba"
+  integrity sha512-nTWw2fN02+ghemiRc/h57oKq0SKcbpmG2xYeGqaY002YYsF8hOAhjGUa65/yHkU39t4na43oh0ArM0MoEiykkg==
+  dependencies:
+    preact-merge-refs "^1.0.2"
+
 preact@^10.11.3:
   version "10.12.1"
   resolved "https://registry.yarnpkg.com/preact/-/preact-10.12.1.tgz#8f9cb5442f560e532729b7d23d42fd1161354a21"

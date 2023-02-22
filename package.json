@@ -13,6 +13,7 @@
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
     "preact": "^10.11.3",
+    "preact-transitioning": "^1.4.0",
     "ts-matrix": "^1.2.2"
   },
   "devDependencies": {

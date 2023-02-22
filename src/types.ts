@@ -21,3 +21,10 @@ export type PingDataAnalysis = {
   overallSuccessRate: number
   last60SuccessRate: number
 }
+
+export type ErrorMessage = {
+  message: string
+  raisedAt: number
+  duration: number
+  visible: boolean
+}

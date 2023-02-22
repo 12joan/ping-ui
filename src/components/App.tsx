@@ -1,11 +1,19 @@
 import { useEffect, useReducer, useState } from 'preact/hooks'
 import { invoke } from '@tauri-apps/api/tauri'
 import { appWindow } from '@tauri-apps/api/window'
+import { StyleTransition } from 'preact-transitioning'
 import { useEventListener } from '../hooks'
 import { PingingPage } from './PingingPage'
 import { StartPage } from './StartPage'
-import { PingData } from '../types'
-import { parsePingData, pingDataReducer } from '../utils'
+import { ErrorBanner } from './ErrorBanner'
+import { PingData, ErrorMessage } from '../types'
+import {
+  makeErrorMessage,
+  parsePingData,
+  pingDataReducer,
+} from '../utils'
+
+const NO_ROUTE_TO_HOST_REGEX = /no route to host/i
 
 const rawStopPing = () => invoke('stop_ping')
 
@@ -18,6 +26,21 @@ export const App = () => {
   const [host, setHost] = useState('')
   const [isPinging, setIsPinging] = useState(false)
   const [pingData, dispatchPingData] = useReducer(pingDataReducer, [])
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null)
+
+  const clearErrorMessage = () => setErrorMessage((errorMessage) => errorMessage && {
+    ...errorMessage,
+    visible: false,
+  })
+
+  useEffect(() => {
+    if (errorMessage?.visible) {
+      const { raisedAt, duration } = errorMessage
+      const timeoutDuration = raisedAt + duration - performance.now()
+      const timeout = setTimeout(clearErrorMessage, timeoutDuration)
+      return () => clearTimeout(timeout)
+    }
+  }, [errorMessage?.raisedAt])
 
   const startPing = () => {
     // TODO: Validate host
@@ -44,18 +67,27 @@ export const App = () => {
 
     if (data) {
       dispatchPingData({ type: 'insert', data })
+
+      if (data.isSuccess) {
+        clearErrorMessage()
+      }
     }
   }) as EventListener, [])
 
-  useEventListener(window, 'ping-stderr', ((event: CustomEvent) => {
-    console.log('Error', event.detail)
+  useEventListener(window, 'ping-stderr', (({ detail }: CustomEvent) => {
+    console.error(detail)
+
+    const parts = detail.split(':')
+    const message = parts[parts.length - 1].trim()
+    const duration = NO_ROUTE_TO_HOST_REGEX.test(message) ? 1500 : undefined
+    setErrorMessage(makeErrorMessage(message, duration))
   }) as EventListener, [])
 
   useEventListener(window, 'ping-exit', ((event) => {
     setIsPinging(false)
   }) as EventListener, [])
 
-  return isPinging
+  const page = isPinging
     ? <PingingPage
       host={host}
       stopPing={stopPing}
@@ -63,7 +95,33 @@ export const App = () => {
     />
     : <StartPage
       host={host}
-      setHost={setHost}
+      setHost={(host) => {
+        setHost(host)
+        clearErrorMessage()
+      }}
       startPing={startPing}
     />
+
+  return (
+    <>
+      {page}
+
+      <StyleTransition
+        in={errorMessage?.visible}
+        styles={{
+          enter: { opacity: 0 },
+          enterActive: { opacity: 0 },
+          enterDone: { opacity: 1 },
+          exitActive: { opacity: 0 },
+        }}
+        duration={200}
+      >
+        <div class="transition-opacity duration-200">
+          {errorMessage && (
+            <ErrorBanner errorMessage={errorMessage} />
+          )}
+        </div>
+      </StyleTransition>
+    </>
+  )
 }
