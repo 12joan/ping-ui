@@ -43,11 +43,6 @@ export const App = () => {
   }, [errorMessage?.raisedAt])
 
   const startPing = () => {
-    // TODO: Validate host
-
-    setIsPinging(true)
-    dispatchPingData({ type: 'clear' })
-
     // TODO: Handle error
     invoke('start_ping', {
       host,
@@ -66,13 +61,18 @@ export const App = () => {
     const data = parsePingData(event.detail)
 
     if (data) {
+      if (!isPinging) {
+        setIsPinging(true)
+        dispatchPingData({ type: 'clear' })
+      }
+
       dispatchPingData({ type: 'insert', data })
 
       if (data.isSuccess) {
         clearErrorMessage()
       }
     }
-  }) as EventListener, [])
+  }) as EventListener, [isPinging])
 
   useEventListener(window, 'ping-stderr', (({ detail }: CustomEvent) => {
     console.error(detail)
