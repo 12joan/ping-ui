@@ -1,7 +1,7 @@
 import { PingData } from '../types'
 import { CacheProvider, withCache } from '../cache'
 import { Graph } from './types'
-import { WINDOW } from './constants'
+import { PING_INTERVAL, WINDOW } from './constants'
 import { interpolate } from './interpolate'
 
 export type GetOffsetOptions = {
@@ -33,6 +33,6 @@ export const getOffset = (graph: Graph, { pingData, time }: GetOffsetOptions): n
   })
 
   const targetOffsetAfterTimePeriod = lastPing.seq - WINDOW + 1
-  const progress = (time - lastPing.arrivedAt) / 1000
+  const progress = (time - lastPing.arrivedAt) / PING_INTERVAL
   return interpolate(offsetWhenLastPingArrived, targetOffsetAfterTimePeriod, progress)
 }

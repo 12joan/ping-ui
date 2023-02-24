@@ -1,7 +1,7 @@
 import { PingData, PingDataSuccess } from '../types'
 import { CacheProvider, withCache } from '../cache'
 import { Graph } from './types'
-import { WINDOW, MIN_MAX_TIME } from './constants'
+import { WINDOW, MIN_MAX_TIME, PING_INTERVAL } from './constants'
 import { getVisiblePings } from './getVisiblePings'
 import { interpolate } from './interpolate'
 
@@ -37,7 +37,7 @@ export const getMaxTime = (graph: Graph, { pingData, time }: GetMaxTimeOptions):
     ...successPings.map(({ time }) => time)
   )
 
-  const progress = (time - lastPing.arrivedAt) / 1000
+  const progress = (time - lastPing.arrivedAt) / PING_INTERVAL
 
   return interpolate(maxTimeWhenLastPingArrived, targetMaxTime, progress)
 }

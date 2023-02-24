@@ -2,11 +2,11 @@ import { PingData } from '../types'
 import { makePingDataTimeout } from '../utils'
 import { getOffset } from './getOffset'
 import { makeGraph } from './makeGraph'
-import { WINDOW } from './constants'
+import { WINDOW, PING_INTERVAL } from './constants'
 import { interpolate } from './interpolate'
 
 const makeNPings = (n: number) => Array.from({ length: n }, (_, seq) => (
-  makePingDataTimeout({ seq, arrivedAt: seq * 1000 })
+  makePingDataTimeout({ seq, arrivedAt: seq * PING_INTERVAL })
 ))
 
 const getLastArrivedAt = (pingData: PingData[]) => (
@@ -14,7 +14,7 @@ const getLastArrivedAt = (pingData: PingData[]) => (
 )
 
 describe('getOffset', () => {
-  describe('when pings arrive every 1000ms exactly', () => {
+  describe('when pings arrive every PING_INTERVAL exactly', () => {
     describe('when there are WINDOW pings', () => {
       const pingData = makeNPings(WINDOW)
 
@@ -37,8 +37,8 @@ describe('getOffset', () => {
         })
       })
 
-      describe('when the last ping arrived 200ms ago', () => {
-        const time = getLastArrivedAt(pingData) + 200
+      describe('when the last ping arrived 1/5 PING_INTERVAL ago', () => {
+        const time = getLastArrivedAt(pingData) + (PING_INTERVAL / 5)
 
         it('should return 0.2', () => {
           const graph = makeGraph()
@@ -46,8 +46,8 @@ describe('getOffset', () => {
         })
       })
 
-      describe('when the last ping arrived 1000ms ago', () => {
-        const time = getLastArrivedAt(pingData) + 1000
+      describe('when the last ping arrived PING_INTERVAL ago', () => {
+        const time = getLastArrivedAt(pingData) + PING_INTERVAL
 
         it('should return 1', () => {
           const graph = makeGraph()
@@ -55,8 +55,8 @@ describe('getOffset', () => {
         })
       })
 
-      describe('when the last ping arrived 1001ms ago', () => {
-        const time = getLastArrivedAt(pingData) + 1001
+      describe('when the last ping arrived PING_INTERVAL + 1ms ago', () => {
+        const time = getLastArrivedAt(pingData) + PING_INTERVAL + 1
 
         it('should return 1', () => {
           const graph = makeGraph()
@@ -77,8 +77,8 @@ describe('getOffset', () => {
         })
       })
 
-      describe('when the last ping arrived 200ms ago', () => {
-        const time = getLastArrivedAt(pingData) + 200
+      describe('when the last ping arrived 1/5 PING_INTERVAL ago', () => {
+        const time = getLastArrivedAt(pingData) + (PING_INTERVAL / 5)
 
         it('should return 1.2', () => {
           const graph = makeGraph()
@@ -86,8 +86,8 @@ describe('getOffset', () => {
         })
       })
 
-      describe('when the last ping arrived 1000ms ago', () => {
-        const time = getLastArrivedAt(pingData) + 1000
+      describe('when the last ping arrived PING_INTERVAL ago', () => {
+        const time = getLastArrivedAt(pingData) + PING_INTERVAL
 
         it('should return 2', () => {
           const graph = makeGraph()
@@ -97,17 +97,17 @@ describe('getOffset', () => {
     })
   })
 
-  describe('when the ping with seq WINDOW + 1 arrived 200ms after the ping with seq WINDOW', () => {
+  describe('when the ping with seq WINDOW + 1 arrived 1/5 PING_INTERVAL after the ping with seq WINDOW', () => {
     const initialPingData = makeNPings(WINDOW)
 
     const pingWindow = makePingDataTimeout({
       seq: WINDOW,
-      arrivedAt: getLastArrivedAt(initialPingData) + 1000,
+      arrivedAt: getLastArrivedAt(initialPingData) + PING_INTERVAL,
     })
 
     const pingWindowPlusOne = makePingDataTimeout({
       seq: WINDOW + 1,
-      arrivedAt: pingWindow.arrivedAt + 200,
+      arrivedAt: pingWindow.arrivedAt + (PING_INTERVAL / 5),
     })
 
     const pingData = [...initialPingData, pingWindow, pingWindowPlusOne]
@@ -126,12 +126,12 @@ describe('getOffset', () => {
 
       it('should interpolate between 0.2 and 2', () => {
         const graph = makeGraph()
-        expect(getOffset(graph, { pingData, time })).toBe(interpolate(0.2, 2, 50 / 1000))
+        expect(getOffset(graph, { pingData, time })).toBe(interpolate(0.2, 2, 50 / PING_INTERVAL))
       })
     })
 
-    describe('when the last ping arrived 1000ms ago', () => {
-      const time = pingWindowPlusOne.arrivedAt + 1000
+    describe('when the last ping arrived PING_INTERVAL ago', () => {
+      const time = pingWindowPlusOne.arrivedAt + PING_INTERVAL
 
       it('should return 2', () => {
         const graph = makeGraph()

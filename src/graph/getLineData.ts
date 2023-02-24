@@ -9,6 +9,7 @@ import {
   pathToString,
   SVGPath,
 } from '../svg'
+import { PING_INTERVAL } from './constants'
 import { Graph } from './types'
 import { getVisiblePings } from './getVisiblePings'
 import { interpolatePoints } from './interpolatePoints'
@@ -54,7 +55,7 @@ export const getLineData = (graph: Graph, { pingData, time }: GetLineDataOptions
     }
 
     const isLast = i === visiblePings.length - 1
-    const progress = (time - ping.arrivedAt) / 1000
+    const progress = (time - ping.arrivedAt) / PING_INTERVAL
 
     const interpolatedPoint = isLast
       ? interpolatePoints(previousPoint!, point, progress)

@@ -2,7 +2,7 @@ import { PingData } from '../types'
 import { makePingDataSuccess } from '../utils'
 import { getMaxTime } from './getMaxTime'
 import { makeGraph } from './makeGraph'
-import { WINDOW, MIN_MAX_TIME } from './constants'
+import { WINDOW, MIN_MAX_TIME, PING_INTERVAL } from './constants'
 import { interpolate } from './interpolate'
 
 const makeNPings = (n: number, timeForSeq: (seq: number) => number) => (
@@ -10,7 +10,7 @@ const makeNPings = (n: number, timeForSeq: (seq: number) => number) => (
     makePingDataSuccess({
       seq,
       time: timeForSeq(seq),
-      arrivedAt: seq * 1000,
+      arrivedAt: seq * PING_INTERVAL,
     })
   ))
 )
@@ -74,19 +74,19 @@ describe('getMaxTime', () => {
           })
         })
 
-        describe('when the last ping arrived 500ms ago', () => {
-          const time = getLastArrivedAt(pingData) + 500
+        describe('when the last ping arrived half PING_INTERVAL ago', () => {
+          const time = getLastArrivedAt(pingData) + (PING_INTERVAL / 2)
 
           it('interpolates between the time at seq 0 and MIN_MAX_TIME', () => {
             const graph = makeGraph()
             expect(getMaxTime(graph, { pingData, time })).toBe(
-              interpolate(timeAtSeq0, MIN_MAX_TIME, 500 / 1000)
+              interpolate(timeAtSeq0, MIN_MAX_TIME, 0.5)
             )
           })
         })
 
-        describe('when the last ping arrived 1000ms ago', () => {
-          const time = getLastArrivedAt(pingData) + 1000
+        describe('when the last ping arrived PING_INTERVAL ago', () => {
+          const time = getLastArrivedAt(pingData) + PING_INTERVAL
 
           it('returns MIN_MAX_TIME', () => {
             const graph = makeGraph()
@@ -114,19 +114,19 @@ describe('getMaxTime', () => {
           })
         })
 
-        describe('when the last ping arrived 500ms ago', () => {
-          const time = getLastArrivedAt(pingData) + 500
+        describe('when the last ping arrived half PING_INTERVAL ago', () => {
+          const time = getLastArrivedAt(pingData) + (PING_INTERVAL / 2)
 
           it('interpolates between the time at seq 0 and the time at seq WINDOW', () => {
             const graph = makeGraph()
             expect(getMaxTime(graph, { pingData, time })).toBe(
-              interpolate(timeAtSeq0, timeAtSeqWindow, 500 / 1000)
+              interpolate(timeAtSeq0, timeAtSeqWindow, 0.5)
             )
           })
         })
 
-        describe('when the last ping arrived 1000ms ago', () => {
-          const time = getLastArrivedAt(pingData) + 1000
+        describe('when the last ping arrived PING_INTERVAL ago', () => {
+          const time = getLastArrivedAt(pingData) + PING_INTERVAL
 
           it('returns the time at seq WINDOW', () => {
             const graph = makeGraph()
