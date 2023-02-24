@@ -9,6 +9,11 @@
 
   * {
     color-scheme: dark;
+    outline: none !important;
+  }
+
+  :focus-visible {
+    @apply ring-2 ring-[highlight];
   }
 }
 
