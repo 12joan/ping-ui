@@ -2,11 +2,17 @@ import { Chevron } from './icons'
 
 export interface StartPageProps {
   host: string
+  readOnly?: boolean
   setHost: (host: string) => void
   startPing: () => void
 }
 
-export const StartPage = ({ host, setHost, startPing }: StartPageProps) => {
+export const StartPage = ({
+  host,
+  readOnly = false,
+  setHost,
+  startPing,
+}: StartPageProps) => {
   const handleInput = (event: Event) => {
     const target = event.target as HTMLInputElement
     setHost(target.value)
@@ -33,6 +39,7 @@ export const StartPage = ({ host, setHost, startPing }: StartPageProps) => {
                 placeholder="0.0.0.0"
                 autoFocus
                 size={20}
+                readOnly={readOnly}
                 value={host}
                 onInput={handleInput}
               />
@@ -42,6 +49,7 @@ export const StartPage = ({ host, setHost, startPing }: StartPageProps) => {
           <button
             type="submit"
             class="rounded-lg bg-white/5 p-2 hover:bg-white/10 transition-colors cursor-default text-white/60 hover:text-white"
+            disabled={readOnly}
             aria-label="Start"
           >
             <Chevron square />

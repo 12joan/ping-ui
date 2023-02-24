@@ -24,6 +24,7 @@ export const App = () => {
   }, [])
 
   const [host, setHost] = useState('')
+  const [startingPing, setStartingPing] = useState(false)
   const [isPinging, setIsPinging] = useState(false)
   const [pingData, dispatchPingData] = useReducer(pingDataReducer, [])
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | null>(null)
@@ -44,10 +45,15 @@ export const App = () => {
 
   const startPing = () => {
     if (/[^\s]/.test(host)) {
-      // TODO: Handle empty host, handle error
+      setStartingPing(true)
+
       invoke('start_ping', {
         host: host.trim(),
         window: appWindow,
+      }).catch((error) => {
+        console.error(error)
+        setErrorMessage(makeErrorMessage('Failed to start ping'))
+        setStartingPing(false)
       })
     } else {
       setErrorMessage(makeErrorMessage('Host cannot be empty'))
@@ -56,9 +62,12 @@ export const App = () => {
 
   const stopPing = () => {
     setIsPinging(false)
+    setStartingPing(false)
 
-    // TODO: Handle error
-    rawStopPing()
+    rawStopPing().catch((error) => {
+      console.error(error)
+      setErrorMessage(makeErrorMessage('Failed to stop ping'))
+    })
   }
 
   useEventListener(window, 'ping-stdout', ((event: CustomEvent) => {
@@ -67,6 +76,7 @@ export const App = () => {
     if (data) {
       if (!isPinging) {
         setIsPinging(true)
+        setStartingPing(false)
         dispatchPingData({ type: 'clear' })
       }
 
@@ -93,18 +103,19 @@ export const App = () => {
 
   const page = isPinging
     ? <PingingPage
-      host={host}
-      stopPing={stopPing}
-      pingData={pingData}
-    />
+        host={host}
+        stopPing={stopPing}
+        pingData={pingData}
+      />
     : <StartPage
-      host={host}
-      setHost={(host) => {
-        setHost(host)
-        clearErrorMessage()
-      }}
-      startPing={startPing}
-    />
+        host={host}
+        readOnly={startingPing}
+        setHost={(host) => {
+          setHost(host)
+          clearErrorMessage()
+        }}
+        startPing={startPing}
+      />
 
   return (
     <>
