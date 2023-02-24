@@ -30,13 +30,13 @@ export const ErrorBanner = ({ errorMessage }: ErrorBannerProps) => {
     <div
       ref={setContainerEl}
       role="alert"
-      class="absolute left-1/2 -translate-x-1/2 inline-block transition-[top] duration-200 delay-100 p-5 pointer-events-none"
+      class="absolute w-fit left-1/2 -translate-x-1/2 transition-[top] duration-200 delay-100 p-5 pointer-events-none"
       style={{
         top: flip ? `calc(100% - ${height}px)` : '0',
       }}
     >
       <div
-        class="inline-block bg-red-600 rounded-lg shadow-lg px-5 py-2"
+        class="bg-red-600 rounded-lg shadow-lg px-5 py-2"
         children={message}
       />
     </div>

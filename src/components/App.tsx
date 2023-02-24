@@ -43,11 +43,15 @@ export const App = () => {
   }, [errorMessage?.raisedAt])
 
   const startPing = () => {
-    // TODO: Handle empty host, handle error
-    invoke('start_ping', {
-      host,
-      window: appWindow,
-    })
+    if (/[^\s]/.test(host)) {
+      // TODO: Handle empty host, handle error
+      invoke('start_ping', {
+        host: host.trim(),
+        window: appWindow,
+      })
+    } else {
+      setErrorMessage(makeErrorMessage('Host cannot be empty'))
+    }
   }
 
   const stopPing = () => {
