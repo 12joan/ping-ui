@@ -15,12 +15,12 @@ export const PingingPage = ({ host, stopPing, pingData }: PingingPageProps) => {
       <div class="flex gap-2 items-center justify-between">
         <button
           type="button"
-          class="rounded-lg bg-white/5 p-2 hover:bg-white/10 transition-colors cursor-default flex gap-2 items-center"
+          class="w-fit rounded-lg bg-white/5 p-2 hover:bg-white/10 transition-colors cursor-default flex gap-2 items-center truncate"
           aria-label={`Stop pinging ${host}`}
           onClick={stopPing}
         >
           <Chevron flip />
-          <span>{host}</span>
+          <span class="truncate">{host}</span>
         </button>
 
         <span class="bg-white/5 rounded-lg p-2">{pingData.length}</span>
