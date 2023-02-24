@@ -38,6 +38,7 @@ const Svg = ({
       width={contentWidth + horizontalPadding * 2}
       height={contentHeight + verticalPadding * 2}
       viewBox={viewBox}
+      aria-hidden
       {...props}
     />
   )
