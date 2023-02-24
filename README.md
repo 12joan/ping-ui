@@ -1,5 +1,7 @@
 # Ping UI
 
+![Screenshot](https://raw.githubusercontent.com/12joan/ping-ui/main/.assets/screenshot.png)
+
 A simple GUI for the `ping` command-line utility built using Tauri.
 
 Requires `ping` to be in the PATH and for the output of `ping` to have the following format:
