@@ -29,28 +29,38 @@ export const Graph = ({ pingData }: GraphProps) => {
   useLayoutEffect(() => {
     let mounted = true
 
-    const update = () => {
-      if (!mounted) return
+    const update = (dryRun = false) => {
       const pingData = pingDataRef.current
       const time = performance.now()
 
       const maxTime = getMaxTime(graph, { pingData, time })
-      timeoutGroupRef.current!.setAttribute('transform', `scale(1, ${maxTime})`)
-
       const transforms = getTransforms(graph, { pingData, time, maxTime })
-      transformGroupRef.current!.setAttribute('transform', transforms)
-
       const [lineData, areaData] = getLineData(graph, { pingData, time })
-      linePathRef.current!.setAttribute('d', lineData)
-      areaPathRef.current!.setAttribute('d', areaData)
 
-      requestAnimationFrame(update)
+      if (!dryRun) {
+        timeoutGroupRef.current!.setAttribute('transform', `scale(1, ${maxTime})`)
+        transformGroupRef.current!.setAttribute('transform', transforms)
+        linePathRef.current!.setAttribute('d', lineData)
+        areaPathRef.current!.setAttribute('d', areaData)
+      }
     }
 
-    update()
+    const animationLoop = () => {
+      if (mounted) {
+        update()
+        requestAnimationFrame(animationLoop)
+      }
+    }
+
+    // Animate every frame when visible
+    animationLoop()
+
+    // Update caches once per second when not visible
+    const interval = setInterval(() => update(true), 1000)
 
     return () => {
       mounted = false
+      clearInterval(interval)
     }
   }, [])
 
