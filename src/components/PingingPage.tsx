@@ -23,7 +23,11 @@ export const PingingPage = ({ host, stopPing, pingData }: PingingPageProps) => {
           <span class="truncate">{host}</span>
         </button>
 
-        <span class="bg-white/5 rounded-lg p-2">{pingData.length}</span>
+        <span class="bg-white/5 rounded-lg p-2">
+          {pingData.length}
+          {' '}
+          <span class="sr-only">pings</span>
+        </span>
       </div>
 
       <Summary pingData={pingData} />
