@@ -43,7 +43,7 @@ export const App = () => {
   }, [errorMessage?.raisedAt])
 
   const startPing = () => {
-    // TODO: Handle error
+    // TODO: Handle empty host, handle error
     invoke('start_ping', {
       host,
       window: appWindow,

@@ -28,3 +28,8 @@ export type ErrorMessage = {
   duration: number
   visible: boolean
 }
+
+export type Point = {
+  x: number
+  y: number
+}

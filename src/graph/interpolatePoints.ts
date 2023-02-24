@@ -1,4 +1,4 @@
-import { Point } from './types'
+import { Point } from '../types'
 import { interpolate } from './interpolate'
 
 export const interpolatePoints = (a: Point, b: Point, progress: number): Point => ({
